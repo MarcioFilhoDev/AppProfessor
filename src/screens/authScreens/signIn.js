@@ -3,7 +3,7 @@ import React from 'react';
 
 export default function SignIn() {
   return (
-    <View style={{ flex: 1, justifyContent: 'center', alignContent: 'center' }}>
+    <View>
       <Text>Tela de login</Text>
     </View>
   );
