@@ -9,7 +9,7 @@ const Tabs = createBottomTabNavigator();
 
 export default function AppRoutes() {
   return (
-    <Tabs.Navigator>
+    <Tabs.Navigator screenOptions={{ headerShown: false }}>
       <Tabs.Screen name="Home" component={Home} />
 
       <Tabs.Screen name="Perfil" component={Perfil} />
