@@ -1,4 +1,5 @@
 import {
+  Alert,
   Keyboard,
   Text,
   TextInput,
@@ -6,18 +7,26 @@ import {
   TouchableWithoutFeedback,
   View,
 } from 'react-native';
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
+import { AuthContext } from '../../contexts/authentication';
 
 export default function SignIn() {
+  const { login } = useContext(AuthContext);
+
   const navegar = useNavigation();
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  const handleLogin = () => {
-    console.log('Login:', email, password);
-  };
+  async function handleLogin() {
+    if (!email || !password) {
+      Alert.alert('Erro.', 'Preencha os campos corretamente.');
+      return;
+    }
+
+    await login(email, password);
+  }
 
   return (
     <TouchableWithoutFeedback

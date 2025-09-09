@@ -1,14 +1,19 @@
-import './global.css'
+globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = true;
+
+import './global.css';
 
 import { NavigationContainer } from '@react-navigation/native';
 
 import Routes from './src/routes/routes';
-import { Text, View } from 'react-native';
+
+import { AuthProvider } from './src/contexts/authentication';
 
 export default function App() {
   return (
     <NavigationContainer>
-      <Routes />
+      <AuthProvider>
+        <Routes />
+      </AuthProvider>
     </NavigationContainer>
   );
 }

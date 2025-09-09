@@ -1,4 +1,5 @@
 import {
+  Alert,
   Keyboard,
   Text,
   TextInput,
@@ -6,28 +7,33 @@ import {
   TouchableWithoutFeedback,
   View,
 } from 'react-native';
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
+import { AuthContext } from '../../contexts/authentication';
 
 export default function SignUp() {
+  const { cadastro } = useContext(AuthContext);
+
   const navegar = useNavigation();
 
-  const [firstName, setFirstName] = useState('');
-  const [lastName, setLastName] = useState('');
+  const [nome, setNome] = useState('');
+  const [sobrenome, setSobrenome] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
 
-  const handleSignup = () => {
-    console.log(
-      'Cadastro:',
-      firstName,
-      lastName,
-      email,
-      password,
-      confirmPassword,
-    );
-  };
+  async function handleSignup() {
+    if (!nome || !sobrenome || !email || !password || !confirmPassword) {
+      Alert.alert('Erro', 'Preencha os campos corretamente.');
+      return;
+    } else if (password !== confirmPassword) {
+      Alert.alert('Erro', 'As senhas não coincidem.');
+      return;
+    }
+
+    const nomeReal = nome + ' ' + sobrenome;
+    cadastro(email, password, nomeReal);
+  }
 
   return (
     <TouchableWithoutFeedback
@@ -48,8 +54,8 @@ export default function SignUp() {
                 className="w-full bg-white border border-gray rounded-lg p-4"
                 placeholder="Nome"
                 placeholderTextColor="#A0A0A0"
-                value={firstName}
-                onChangeText={setFirstName}
+                value={nome}
+                onChangeText={text => setNome(text)}
               />
             </View>
 
@@ -59,8 +65,8 @@ export default function SignUp() {
                 className="w-full bg-white border border-gray rounded-lg p-4"
                 placeholder="Sobrenome"
                 placeholderTextColor="#A0A0A0"
-                value={lastName}
-                onChangeText={setLastName}
+                value={sobrenome}
+                onChangeText={text => setSobrenome(text)}
               />
             </View>
           </View>
@@ -73,7 +79,7 @@ export default function SignUp() {
               placeholder="E-mail"
               placeholderTextColor="#A0A0A0"
               value={email}
-              onChangeText={setEmail}
+              onChangeText={text => setEmail(text)}
             />
           </View>
 
@@ -86,7 +92,7 @@ export default function SignUp() {
               placeholderTextColor="#A0A0A0"
               secureTextEntry
               value={password}
-              onChangeText={setPassword}
+              onChangeText={text => setPassword(text)}
             />
           </View>
 
@@ -101,7 +107,7 @@ export default function SignUp() {
               placeholderTextColor="#A0A0A0"
               secureTextEntry
               value={confirmPassword}
-              onChangeText={setConfirmPassword}
+              onChangeText={text => setConfirmPassword(text)}
             />
           </View>
 
