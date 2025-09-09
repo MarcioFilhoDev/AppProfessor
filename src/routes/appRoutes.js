@@ -5,6 +5,8 @@ import Home from '../screens/appScreens/home';
 import Perfil from '../screens/appScreens/perfil';
 import Treinos from '../screens/appScreens/treinos';
 
+import ScreensStack from '../routes/stackRoutes';
+
 // Biblioteca de icones
 import Lucide from '@react-native-vector-icons/lucide';
 
