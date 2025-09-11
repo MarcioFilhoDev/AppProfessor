@@ -1,66 +1,28 @@
-import { useContext, useState } from 'react';
 import {
-  Alert,
   Keyboard,
+  ScrollView,
   Text,
-  TextInput,
   TouchableOpacity,
   TouchableWithoutFeedback,
   View,
+  Modal,
 } from 'react-native';
+import { useContext, useState } from 'react';
+
 import { ExerciciosContext } from '../../contexts/exercicios';
-import { Picker } from '@react-native-picker/picker';
-import { colors } from '../../constants/colors';
+
+import FormNovoExercicio from '../../components/formNovoExercicio';
+import DetalhesExercicio from '../../components/detalhesExercicio';
 
 export default function Treinos() {
-  const { novoExercicio } = useContext(ExerciciosContext);
+  const { exercicios, deletarExercicio } = useContext(ExerciciosContext);
 
-  let niveis = [
-    {
-      nivel: 1,
-      classificacao: 'Iniciante',
-    },
-    {
-      nivel: 2,
-      classificacao: 'Intermediário',
-    },
-    {
-      nivel: 3,
-      classificacao: 'Avançado',
-    },
-    {
-      nivel: 4,
-      classificacao: 'Profissional',
-    },
-  ];
+  const [statusModal, setStatusModal] = useState(false);
+  const [exercicioSelecionado, setExercicioSelecionado] = useState(null);
 
-  const [grupoMuscular, setGrupoMuscular] = useState('');
-
-  const [nomeExercicio, setNomeExercicio] = useState('');
-
-  const [nivel, setNivel] = useState(null);
-
-  function salvandoExercicio() {
-    if (!nomeExercicio || !grupoMuscular || !nivel) {
-      Alert.alert('Erro', 'Preencha corretamente os campos.');
-      return;
-    }
-
-    let dados = {
-      nome: nomeExercicio,
-      grupoMuscular: grupoMuscular,
-      nivel: nivel,
-    };
-
-    // Alert.alert(
-    //   'Salvo',
-    //   `${dados.nome} - ${dados.grupoMuscular} - Nivel: ${dados.nivel}`,
-    // );
-
-    novoExercicio(dados);
-    setGrupoMuscular('');
-    setNomeExercicio('');
-    setNivel('');
+  function abrindoModal(item) {
+    setExercicioSelecionado(item);
+    setStatusModal(true);
   }
 
   return (
@@ -68,92 +30,69 @@ export default function Treinos() {
       onPress={() => Keyboard.dismiss()}
       touchSoundDisabled
     >
-      <View className="flex-1 justify-center items-center w-full">
-        <View className="w-4/5 gap-6">
-          {/* Digitando nome */}
-          <View className="flex-row items-center w-full gap-2">
-            <Text>Nome do exercicio: </Text>
-            <TextInput
-              placeholder="Ex: supino reto"
-              className="bg-white flex-1 elevation rounded p-2"
-              maxLength={50}
-              value={nomeExercicio}
-              onChangeText={text => setNomeExercicio(text)}
-            />
-          </View>
+      <View className="flex-1 gap-4">
+        {/* Formulario para cadastrar novo exercicio */}
+        <FormNovoExercicio />
 
-          {/* Definindo grupo muscular */}
-          <View className="flex-col  w-full gap-2">
-            <Text>Selecione o grupo muscular: </Text>
+        <View className="items-center w-full px-4">
+          <View className="bg-black/20 w-full h-0.5 rounded-xl" />
+        </View>
 
-            <View className="flex-row gap-4">
-              <TouchableOpacity
-                onPress={() => setGrupoMuscular('inferiores')}
-                className={`bg-white flex-1 items-center elevation rounded p-2 border-2 ${
-                  grupoMuscular === 'inferiores'
-                    ? 'border-primary'
-                    : 'border-white'
-                }`}
-              >
-                <Text>Inferiroes</Text>
-              </TouchableOpacity>
+        {/* Lista de exercicios */}
+        <ScrollView className="flex-1 bg-gray-100">
+          <View className="w-full items-center">
+            <View className="w-11/12 rounded-md">
+              <View className="flex-row bg-primary rounded-t-md">
+                <Text className="flex-1 text-white text-base font-bold text-center py-2 border-r border-orange-300">
+                  Exercícios
+                </Text>
+                <Text className="flex-1 text-white text-base font-bold text-center py-2 border-r border-orange-300">
+                  Grupo Muscular
+                </Text>
+                <Text className="flex-1 text-white text-base font-bold text-center py-2 border-orange-300">
+                  Nível
+                </Text>
+              </View>
 
-              <TouchableOpacity
-                onPress={() => setGrupoMuscular('superiores')}
-                className={`bg-white flex-1 items-center elevation rounded p-2 border-2 ${
-                  grupoMuscular === 'superiores'
-                    ? 'border-primary'
-                    : 'border-white'
-                }`}
-              >
-                <Text>Superiores</Text>
-              </TouchableOpacity>
+              {exercicios.map(item => (
+                // Quando pressionar um botão abre um modal com as informacoes
+                // Sendo possivel deletar ou editar os dados
+                <TouchableOpacity
+                  onPress={() => abrindoModal(item)}
+                  activeOpacity={0.5}
+                  key={item.id}
+                  className="flex-row items-stretch bg-white elevation border-b border-orange-400 rounded-b-md"
+                >
+                  <Text className="flex-1 text-secondary text-center py-2 border-r border-orange-400 self-stretch">
+                    {item.nome}
+                  </Text>
 
-              <TouchableOpacity
-                onPress={() => setGrupoMuscular('abdomen')}
-                className={`bg-white flex-1 items-center elevation rounded p-2 border-2 ${
-                  grupoMuscular === 'abdomen'
-                    ? 'border-primary'
-                    : 'border-white'
-                }`}
-              >
-                <Text>Abdomen</Text>
-              </TouchableOpacity>
+                  <Text className="flex-1 text-secondary text-center py-2 border-r border-orange-400 self-stretch">
+                    {item.grupoMuscular}
+                  </Text>
+
+                  <Text className="flex-1 text-secondary text-center py-2 self-stretch">
+                    {item.nivel}
+                  </Text>
+                </TouchableOpacity>
+              ))}
             </View>
           </View>
+        </ScrollView>
 
-          {/* Definindo nivel do exercicio */}
-          <View className="flex-row justify-between">
-            {niveis.map(item => {
-              return (
-                <View className="items-center gap-1.5">
-                  <TouchableOpacity
-                    onPress={() => setNivel(item.classificacao)}
-                    className={`bg-white items-center elevation rounded-lg py-4 px-6 border-2 ${
-                      nivel === item.classificacao
-                        ? 'border-primary'
-                        : 'border-white'
-                    }`}
-                  >
-                    <Text>{item.nivel}</Text>
-                  </TouchableOpacity>
-
-                  <Text>{item.classificacao}</Text>
-                </View>
-              );
-            })}
-          </View>
-
-          {/* Botão para salvar exercicio */}
-          <View className="items-center">
-            <TouchableOpacity
-              onPress={salvandoExercicio}
-              className="bg-primary items-center w-1/2 p-3.5 rounded-lg elevation"
-            >
-              <Text className="font-medium text-white">Salvar</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
+        <Modal visible={statusModal} animationType="slide" transparent={true}>
+          {exercicioSelecionado && (
+            <DetalhesExercicio
+              fecharModal={() => setStatusModal(false)}
+              nome={exercicioSelecionado.nome}
+              grupoMuscular={exercicioSelecionado.grupoMuscular}
+              nivel={exercicioSelecionado.nivel}
+              usuario={exercicioSelecionado.cadastrado_por}
+              id={exercicioSelecionado.id}
+              deletarExercicio={deletarExercicio}
+            />
+          )}
+        </Modal>
       </View>
     </TouchableWithoutFeedback>
   );
