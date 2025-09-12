@@ -36,6 +36,10 @@ export function AuthProvider({ children }) {
     await AsyncStorage.setItem('@userCredentials', JSON.stringify(data));
   }
 
+  async function removendoUser() {
+    await AsyncStorage.removeItem('@userCredentials');
+  }
+
   // Cadastro
   async function cadastro(email, password, nome) {
     setLoading(true);
@@ -104,6 +108,23 @@ export function AuthProvider({ children }) {
       });
   }
 
+  // Logout
+  async function logout() {
+    setLoading(true);
+    await auth()
+      .signOut()
+      .then(() => {
+        setUser(null);
+        removendoUser();
+        setLoading(false);
+      })
+      .catch(error => {
+        setLoading(false);
+        Alert.alert('Erro', error.message);
+        return;
+      });
+  }
+
   if (loading) {
     return (
       <View className="flex-1 justify-center items-center">
@@ -113,7 +134,9 @@ export function AuthProvider({ children }) {
   }
 
   return (
-    <AuthContext.Provider value={{ cadastro, login, userSigned: !!user, user }}>
+    <AuthContext.Provider
+      value={{ cadastro, login, logout, userSigned: !!user, user }}
+    >
       {children}
     </AuthContext.Provider>
   );

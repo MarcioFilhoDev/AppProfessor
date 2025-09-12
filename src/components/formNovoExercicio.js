@@ -2,6 +2,7 @@ import { Alert, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import React, { useContext, useState } from 'react';
 
 import { ExerciciosContext } from '../contexts/exercicios';
+import { colors } from '../constants/colors';
 
 export default function FormNovoExercicio() {
   const { criarExercicio } = useContext(ExerciciosContext);
@@ -63,6 +64,7 @@ export default function FormNovoExercicio() {
           <Text>Nome do exercicio: </Text>
           <TextInput
             placeholder="Ex: supino reto"
+            placeholderTextColor={'#7a7b7d'}
             className="bg-white flex-1 elevation rounded p-2"
             maxLength={50}
             value={nomeExercicio}
