@@ -8,13 +8,16 @@ import Routes from './src/routes/routes';
 
 import { AuthProvider } from './src/contexts/authentication';
 import { ExerciciosProvider } from './src/contexts/exercicios';
+import { RequsicaoProvider } from './src/contexts/requisicoes';
 
 export default function App() {
   return (
     <NavigationContainer>
       <AuthProvider>
         <ExerciciosProvider>
-          <Routes />
+          <RequsicaoProvider>
+            <Routes />
+          </RequsicaoProvider>
         </ExerciciosProvider>
       </AuthProvider>
     </NavigationContainer>

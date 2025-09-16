@@ -1,51 +1,32 @@
-import { Text, TouchableOpacity, View } from 'react-native';
-import React from 'react';
+import { FlatList, Text, TouchableOpacity, View } from 'react-native';
+import React, { useContext } from 'react';
 
+import { RequisicoesContext } from '../../contexts/requisicoes';
+import CardRequisicao from '../../components/cardRequisicao';
 import { useNavigation } from '@react-navigation/native';
-import Lucide from '@react-native-vector-icons/lucide';
 
 export default function Home() {
   const navegar = useNavigation();
-
-  // Esses dados virão do Firestore
-  // Acessar coleção user_treinos_config -> mapear e renderizar os documentos
-  const especificacoes = [
-    {
-      id: 1,
-      nome: 'Marcio',
-      idade: 22,
-      treinos: [
-        {
-          nome: 'A',
-          exercicios: [
-            {
-              nome: 'Supino reto',
-              repeticoes: 12,
-              series: 4,
-            },
-          ],
-        },
-      ],
-    },
-    {
-      id: 2,
-      nome: 'Lara',
-      idade: 18,
-    },
-  ];
+  //  De onde vem os documentos criados
+  const { reqs } = useContext(RequisicoesContext);
 
   return (
-    <View className="flex-1 justify-center items-center gap-4">
-      {especificacoes.map(item => (
-        <TouchableOpacity
-          className="bg-gray w-4/5 p-4 rounded"
-          key={item.id}
-          onPress={() => navegar.navigate('Requisicao', { pessoa: item })} // envia os dados
-        >
-          <Lucide name="user" size={30} />
-          <Text>{item.nome}</Text>
-        </TouchableOpacity>
-      ))}
+    <View className="flex-1 bg-white p-4">
+      <Text className="text-2xl font-bold mb-4 text-center">
+        Requisições de Treino
+      </Text>
+
+      {reqs.length === 0 ? (
+        <Text className="text-center text-gray-500">
+          Nenhuma requisição aguardando
+        </Text>
+      ) : (
+        <FlatList
+          data={reqs}
+          keyExtractor={item => item.id}
+          renderItem={({ item }) => <CardRequisicao pessoa={item} />}
+        />
+      )}
     </View>
   );
 }

@@ -10,7 +10,7 @@ export function ExerciciosProvider({ children }) {
   const { user } = useContext(AuthContext);
   const [exercicios, setExercicios] = useState([]);
 
-  //    Funcao que cadastra um exercicio no banco de dados
+  //  Funcao que cadastra um exercicio no banco de dados
   async function criarExercicio(informacoes) {
     //  informacoes é um array
     //  informacoes.grupoMuscular > inferiores, superiores, abdomen
@@ -25,7 +25,7 @@ export function ExerciciosProvider({ children }) {
     });
   }
 
-  //    Funcao que apaga um exercicio no banco de dados
+  //  Funcao que apaga um exercicio no banco de dados
   async function deletarExercicio(exercicio) {
     const { id, nome, grupoMuscular, nivel, cadastrado_por } = exercicio;
 
@@ -52,7 +52,7 @@ export function ExerciciosProvider({ children }) {
       });
   }
 
-  // Responsavel por ficar "ouvindo" as alterações na coleção "exercicios"
+  //  Responsavel por ficar "ouvindo" as alterações na coleção "exercicios"
   useEffect(() => {
     const dados = firestore()
       .collection('exercicios')
