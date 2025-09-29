@@ -8,7 +8,7 @@ import Routes from './src/routes/routes';
 
 import { AuthProvider } from './src/contexts/authentication';
 import { ExerciciosProvider } from './src/contexts/exercicios';
-import { RequsicaoProvider } from './src/contexts/requisicoes';
+import { RequsicaoProvider } from './src/contexts/requisicoesContext';
 
 export default function App() {
   return (

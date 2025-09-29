@@ -1,14 +1,12 @@
-import { FlatList, Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, FlatList, Text, View } from 'react-native';
 import React, { useContext } from 'react';
 
-import { RequisicoesContext } from '../../contexts/requisicoes';
-import CardRequisicao from '../../components/cardRequisicao';
-import { useNavigation } from '@react-navigation/native';
+import { RequisicoesContext } from '../../contexts/requisicoesContext';
+import CardAluno from '../../components/cardRequisicao';
+import { colors } from '../../constants/colors';
 
 export default function Home() {
-  const navegar = useNavigation();
-  //  De onde vem os documentos criados
-  const { reqs } = useContext(RequisicoesContext);
+  const { reqs, loading } = useContext(RequisicoesContext);
 
   return (
     <View className="flex-1 bg-white p-4">
@@ -16,7 +14,12 @@ export default function Home() {
         Requisições de Treino
       </Text>
 
-      {reqs.length === 0 ? (
+      {loading ? (
+        <View className="flex-1 justify-center items-center">
+          <ActivityIndicator size={34} color={colors.secondary} />
+          <Text className="text-secondary text-lg">Carregando informações</Text>
+        </View>
+      ) : reqs.length === 0 ? (
         <Text className="text-center text-gray-500">
           Nenhuma requisição aguardando
         </Text>
@@ -24,7 +27,7 @@ export default function Home() {
         <FlatList
           data={reqs}
           keyExtractor={item => item.id}
-          renderItem={({ item }) => <CardRequisicao pessoa={item} />}
+          renderItem={({ item }) => <CardAluno pessoa={item} />}
         />
       )}
     </View>

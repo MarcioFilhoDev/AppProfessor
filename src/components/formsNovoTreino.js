@@ -6,14 +6,20 @@ import {
   ScrollView,
   TouchableWithoutFeedback,
   Keyboard,
+  Alert,
 } from 'react-native';
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 
-import { ExerciciosContext } from '../contexts/exercicios';
 import Lucide from '@react-native-vector-icons/lucide';
 import { colors } from '../constants/colors';
 
-export default function FormularioNovoTreino() {
+import firestore from '@react-native-firebase/firestore';
+
+import { ExerciciosContext } from '../contexts/exercicios';
+import { RequisicoesContext } from '../contexts/requisicoesContext';
+
+export default function FormularioNovoTreino({ idAluno }) {
+  const { fichasTemporarias } = useContext(RequisicoesContext);
   const { exercicios } = useContext(ExerciciosContext);
 
   const [nomeFicha, setNomeFicha] = useState('');
@@ -33,7 +39,13 @@ export default function FormularioNovoTreino() {
   }
 
   function adicionarExercicio() {
-    if (!exercicioEscolhido || !series || !repeticoes) return;
+    if (!exercicioEscolhido || !series || !repeticoes) {
+      Alert.alert(
+        'Existem campos não preenchidos',
+        'Por favor, preencha corretamente os campos.',
+      );
+      return;
+    }
 
     setExerciciosDaFicha([
       ...exerciciosDaFicha,
@@ -46,19 +58,58 @@ export default function FormularioNovoTreino() {
   }
 
   function finalizarFicha() {
-    if (exerciciosDaFicha.length === 0) return;
+    //  Verifica se tem algum exercicio na ficha de treinos
+    if (exerciciosDaFicha.length === 0) {
+      Alert.alert(
+        'Nenhum exercício adicionado',
+        'Insira ao menos 1 exercício.',
+      );
+      return;
+    }
 
-    setFichas([...fichas, exerciciosDaFicha]);
+    //  Armazenando as fichas
+    const novasFichas = [
+      ...fichas,
+      {
+        nome: nomeFicha,
+        exercicios: exerciciosDaFicha,
+      },
+    ];
+
+    setFichas(novasFichas);
     setNovaFicha(false);
     setExerciciosDaFicha([]);
+    setNomeFicha('');
+
+    //  Chama a funcao para salvar as fichas temporarias
+    fichasTemporarias(novasFichas, idAluno);
   }
+
+  //  Busca as fichas de treino temporarias para o aluno que fez a requisicao
+  useEffect(() => {
+    async function carregarFichas() {
+      const docRef = await firestore()
+        .collection('fichas_temporarias')
+        .doc(idAluno)
+        .get();
+
+      if (docRef.exists) {
+        const data = docRef.data();
+        setFichas(data.fichas || []); // 👈 já popula suas fichas salvas
+      }
+    }
+
+    if (idAluno) {
+      carregarFichas();
+    }
+  }, [idAluno]);
 
   return (
     <TouchableWithoutFeedback
       onPress={() => Keyboard.dismiss()}
       touchSoundDisabled={true}
     >
-      <View className="flex-1 mt-4">
+      <View className="flex-1">
         {!novaFicha && (
           <TouchableOpacity
             onPress={iniciarNovaFicha}
@@ -70,12 +121,13 @@ export default function FormularioNovoTreino() {
           </TouchableOpacity>
         )}
         {novaFicha && (
-          <View className="p-2">
-            <View className="p-2 border-2 border-gray/45 rounded-md mb-2">
+          <View className="gap-2">
+            {/* Inserindo nome da ficha */}
+            <View className="p-2 border-2 border-gray/45 elevation-sm bg-white rounded-md">
               <Text className="font-bold text-lg">Nome da ficha: </Text>
 
               <TextInput
-                className="bg-white p-2 elevation rounded"
+                className="p-2 border-2 border-gray/35 rounded-md"
                 maxLength={35}
                 value={nomeFicha}
                 onChangeText={text => setNomeFicha(text)}
@@ -84,10 +136,10 @@ export default function FormularioNovoTreino() {
               />
             </View>
 
-            <Text className="font-bold text-lg mb-2">Exercícios</Text>
+            <Text className="font-bold text-lg">Exercícios</Text>
 
             {/* Lista com os exercícios cadastrados no banco de dados */}
-            <ScrollView className="max-h-32 border-2 border-gray/45 rounded-md mb-2">
+            <ScrollView className="max-h-32 border-2 border-gray/45 elevation-sm rounded-md">
               {exercicios.map(item => (
                 <TouchableOpacity
                   key={item.id}
@@ -98,15 +150,15 @@ export default function FormularioNovoTreino() {
                   }}
                   className={`p-2.5`}
                 >
-                  <Text>{item.nome}</Text>
+                  <Text className="text-dark">{item.nome}</Text>
                 </TouchableOpacity>
               ))}
             </ScrollView>
 
             {/* Definindo a quantidade de series e repeticoes */}
-            <View className="flex-row justify-between mb-2">
+            <View className="flex-row justify-between">
               {/* Numero de series */}
-              <View className="border-2 border-gray/60 rounded-md p-2">
+              <View className="border-2 border-gray/60 bg-white elevation-sm rounded-md p-2">
                 <Text className="text-center">Número séries</Text>
 
                 <View className="flex-row items-center gap-4">
@@ -115,7 +167,7 @@ export default function FormularioNovoTreino() {
                     onPress={() => setSeries(prev => Math.max(0, prev - 1))}
                     className="bg-slate-300 rounded-full"
                   >
-                    <Lucide name="minus" size={24} color={colors.secondary} />
+                    <Lucide name="minus" size={24} color={colors.dark} />
                   </TouchableOpacity>
 
                   <TextInput
@@ -131,13 +183,13 @@ export default function FormularioNovoTreino() {
                     onPress={() => setSeries(prev => Math.max(0, prev + 1))}
                     className="bg-slate-300 rounded-full"
                   >
-                    <Lucide name="plus" size={24} color={colors.secondary} />
+                    <Lucide name="plus" size={24} color={colors.dark} />
                   </TouchableOpacity>
                 </View>
               </View>
 
               {/* Numero de repeticoes */}
-              <View className="border-2 border-gray/60 rounded-md p-2">
+              <View className="border-2 border-gray/60 bg-white elevation-sm rounded-md p-2">
                 <Text className="text-center">Número repetições</Text>
 
                 <View className="flex-row items-center gap-4">
@@ -146,7 +198,7 @@ export default function FormularioNovoTreino() {
                     onPress={() => setRepeticoes(prev => Math.max(0, prev - 1))}
                     className="bg-slate-300 rounded-full"
                   >
-                    <Lucide name="minus" size={24} color={colors.secondary} />
+                    <Lucide name="minus" size={24} color={colors.dark} />
                   </TouchableOpacity>
 
                   <TextInput
@@ -161,18 +213,19 @@ export default function FormularioNovoTreino() {
                     onPress={() => setRepeticoes(prev => Math.max(0, prev + 1))}
                     className="bg-slate-300 rounded-full"
                   >
-                    <Lucide name="plus" size={24} color={colors.secondary} />
+                    <Lucide name="plus" size={24} color={colors.dark} />
                   </TouchableOpacity>
                 </View>
               </View>
             </View>
 
-            {/* Botão adicionar exercício */}
+            {/* Botao para adicionar exercício */}
             <TouchableOpacity
+              activeOpacity={0.7}
               onPress={adicionarExercicio}
-              className="bg-green-600 p-2.5 rounded-md mb-2"
+              className="bg-green-600 p-2.5 rounded-md elevation-sm mt-2"
             >
-              <Text className="text-white text-center">
+              <Text className="text-white font-bold text-center">
                 Adicionar Exercício
               </Text>
             </TouchableOpacity>
@@ -188,23 +241,24 @@ export default function FormularioNovoTreino() {
               </Text>
             ))}
 
-            {/* Botão finalizar ficha */}
-            <TouchableOpacity
-              onPress={finalizarFicha}
-              className="bg-secondary p-2.5 rounded-md mt-2"
-            >
-              <Text className="text-white text-center">
-                Gravar dados da ficha
-              </Text>
-            </TouchableOpacity>
+            {/*  Botoes de ação */}
+            <View className="flex-1 flex-row-reverse gap-4">
+              {/* Botão finalizar ficha */}
+              <TouchableOpacity
+                onPress={finalizarFicha}
+                className="bg-secondary p-3 rounded elevation flex-1"
+              >
+                <Text className="text-white text-center">Gravar dados</Text>
+              </TouchableOpacity>
 
-            {/* Botao para cancelar */}
-            <TouchableOpacity
-              onPress={() => setNovaFicha(false)}
-              className="bg-red-300 p-3 rounded elevation"
-            >
-              <Text className="text-center font-medium">Cancelar</Text>
-            </TouchableOpacity>
+              {/* Botao para cancelar */}
+              <TouchableOpacity
+                onPress={() => setNovaFicha(false)}
+                className="bg-red-300 p-3 rounded elevation flex-1"
+              >
+                <Text className="text-center font-medium">Cancelar</Text>
+              </TouchableOpacity>
+            </View>
           </View>
         )}
 
@@ -212,11 +266,11 @@ export default function FormularioNovoTreino() {
           <View />
         ) : (
           <View className="mt-4">
-            <Text className="font-bold mb-2">Fichas Salvas:</Text>
+            <Text className="font-bold">Fichas Salvas:</Text>
             {fichas.map((ficha, i) => (
-              <View key={i} className="border-2 border-gray/45 p-2 mb-2">
-                <Text className="font-bold">Ficha {i + 1}</Text>
-                {ficha.map((ex, idx) => (
+              <View key={i} className="border-2 border-gray/45 p-2">
+                <Text className="font-bold">{ficha.nome}</Text>
+                {ficha.exercicios.map((ex, idx) => (
                   <Text key={idx}>
                     {ex.nome} - {ex.series} x {ex.repeticoes}
                   </Text>
