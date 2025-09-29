@@ -1,8 +1,7 @@
-import { createContext, useEffect, useState } from 'react';
+import { createContext, useCallback, useEffect, useState } from 'react';
 
 import firestore from '@react-native-firebase/firestore';
 import { useFocusEffect } from '@react-navigation/native';
-import { Alert } from 'react-native';
 
 export const RequisicoesContext = createContext({});
 
@@ -11,22 +10,6 @@ export function RequsicaoProvider({ children }) {
   const [reqs, setReqs] = useState([]);
 
   const [loading, setLoading] = useState(false);
-
-  //  Funcao que resgata as requisicoes marcadas como "aguardando"
-  async function ResgatandoRequisicoes() {
-    setLoading(true);
-    const requisicoesAguardando = await firestore()
-      .collection('requisicoes_treino')
-      .where('status', '==', 'Aguardando')
-      .get();
-
-    const documentos = requisicoesAguardando.docs.map(doc => ({
-      id: doc.id,
-      ...doc.data(),
-    }));
-    setReqs(documentos);
-    setLoading(false);
-  }
 
   //  Envia os treinos para o usuario
   async function enviarTreinos(idAluno, fichasCriadas) {
@@ -58,7 +41,20 @@ export function RequsicaoProvider({ children }) {
   }
 
   useEffect(() => {
-    ResgatandoRequisicoes();
+    const ouvinte = firestore()
+      .collection('requisicoes_treino')
+      .where('status', '==', 'Aguardando')
+      .onSnapshot(previa => {
+        const documentos = previa.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+        setReqs(documentos);
+        setLoading(false);
+      });
+
+    // Remove o "ouvinte" quando terminar
+    return () => ouvinte();
   }, []);
 
   return (

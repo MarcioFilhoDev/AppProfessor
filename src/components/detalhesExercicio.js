@@ -27,6 +27,7 @@ export default function DetalhesExercicio({
             <Text>Cadastrado por: {usuario}</Text>
 
             <View className=" items-center">
+              {/* Botão para cancelar a ficha */}
               <TouchableOpacity
                 onPress={fecharModal}
                 className="mt-4 px-5 py-3 rounded-lg bg-red-200"
@@ -36,6 +37,7 @@ export default function DetalhesExercicio({
                 </Text>
               </TouchableOpacity>
 
+              {/* Botão para apagar exercicio criado */}
               <TouchableOpacity
                 onPress={() => {
                   const exercicio = {

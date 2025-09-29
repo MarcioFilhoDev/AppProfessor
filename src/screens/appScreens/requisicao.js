@@ -5,14 +5,20 @@ import firestore from '@react-native-firebase/firestore';
 
 import FormularioNovoTreino from '../../components/formsNovoTreino';
 import { RequisicoesContext } from '../../contexts/requisicoesContext';
+import Lucide from '@react-native-vector-icons/lucide';
+import { useNavigation } from '@react-navigation/native';
 
 export default function Requisicao({ route }) {
+  const navegar = useNavigation();
+
   const { enviarTreinos } = useContext(RequisicoesContext);
 
   const { pessoa } = route.params;
 
   //  Armazena as fichas criadas
   const [fichas, setFichas] = useState([]);
+
+  const [statusFormulario, setStatusFormulario] = useState(false);
 
   function enviarAsFichas(novasFichas) {
     //  Insere/atualiza as fichas com as novas
@@ -36,11 +42,19 @@ export default function Requisicao({ route }) {
 
   return (
     <ScrollView className="flex-1 p-6">
+      <View className="mb-4">
+        <TouchableOpacity
+          className="flex-row items-center"
+          onPress={() => navegar.goBack()}
+        >
+          <Lucide name="arrow-left" size={28} className="elevation-20" />
+        </TouchableOpacity>
+      </View>
+
       <View className="bg-neutral-50 rounded-md p-4 gap-1.5 elevation mb-4">
         {/* Nome do aluno */}
-        <Text className="text-xl font-bold">
-          Solicitação de treino:{' '}
-          <Text className="font-normal">{pessoa.aluno}</Text>
+        <Text className="text-lg font-bold">
+          Solicitado por: <Text className="font-normal">{pessoa.aluno}</Text>
         </Text>
 
         {/* Objetivo do aluno */}
@@ -63,8 +77,12 @@ export default function Requisicao({ route }) {
       <FormularioNovoTreino idAluno={pessoa.id} enviando={enviarAsFichas} />
 
       <TouchableOpacity
-        className="bg-slate-500 p-2.5 items-center rounded-md elevation-md"
-        onPress={() => enviarTreinos(pessoa.id, fichas)} //  Envia as fichas para o bd
+        activeOpacity={0.7}
+        className="bg-slate-500 mt-4 p-2.5 items-center rounded-md elevation-md"
+        onPress={() => {
+          enviarTreinos(pessoa.id, fichas);
+          navegar.goBack();
+        }} //  Envia as fichas para o bd
       >
         <Text className="text-white font-medium">Enviar treinos</Text>
       </TouchableOpacity>

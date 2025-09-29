@@ -13,11 +13,14 @@ import {
 import React, { useContext, useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import { AuthContext } from '../../contexts/authentication';
+import Lucide from '@react-native-vector-icons/lucide';
 
 export default function SignUp() {
   const { cadastro } = useContext(AuthContext);
 
   const navegar = useNavigation();
+
+  const [showPass, setShowPass] = useState(true);
 
   const [nome, setNome] = useState('');
   const [sobrenome, setSobrenome] = useState('');
@@ -107,7 +110,7 @@ export default function SignUp() {
                   className="w-full bg-white border border-gray rounded-lg p-4"
                   placeholder="Senha"
                   placeholderTextColor="#A0A0A0"
-                  secureTextEntry
+                  secureTextEntry={showPass}
                   value={password}
                   onChangeText={text => setPassword(text)}
                 />
@@ -122,10 +125,24 @@ export default function SignUp() {
                   className="w-full bg-white border border-gray rounded-lg p-4"
                   placeholder="Confirmar senha"
                   placeholderTextColor="#A0A0A0"
-                  secureTextEntry
+                  secureTextEntry={showPass}
                   value={confirmPassword}
                   onChangeText={text => setConfirmPassword(text)}
                 />
+              </View>
+
+              <View>
+                <TouchableOpacity
+                  onPress={() => setShowPass(!showPass)}
+                  activeOpacity={0.7}
+                  className="flex-row items-center gap-1.5"
+                >
+                  <Lucide
+                    name={showPass ? 'square' : 'square-check-big'}
+                    size={20}
+                  />
+                  <Text>{showPass ? 'Mostrar' : 'Ocultar'} senha</Text>
+                </TouchableOpacity>
               </View>
 
               {/* Botão cadastrar */}

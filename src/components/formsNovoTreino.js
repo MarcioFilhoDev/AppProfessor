@@ -23,6 +23,7 @@ export default function FormularioNovoTreino({ idAluno }) {
   const { exercicios } = useContext(ExerciciosContext);
 
   const [nomeFicha, setNomeFicha] = useState('');
+  const [videoUrl, setVideoUrl] = useState('');
   const [fichas, setFichas] = useState([]);
   const [novaFicha, setNovaFicha] = useState(false);
   const [exerciciosDaFicha, setExerciciosDaFicha] = useState([]);
@@ -39,7 +40,7 @@ export default function FormularioNovoTreino({ idAluno }) {
   }
 
   function adicionarExercicio() {
-    if (!exercicioEscolhido || !series || !repeticoes) {
+    if (!exercicioEscolhido || !series || !repeticoes || !videoUrl) {
       Alert.alert(
         'Existem campos não preenchidos',
         'Por favor, preencha corretamente os campos.',
@@ -49,7 +50,7 @@ export default function FormularioNovoTreino({ idAluno }) {
 
     setExerciciosDaFicha([
       ...exerciciosDaFicha,
-      { nome: exercicioEscolhido, series, repeticoes },
+      { nome: exercicioEscolhido, series, repeticoes, videoUrl },
     ]);
 
     setExercicioEscolhido(null);
@@ -217,6 +218,20 @@ export default function FormularioNovoTreino({ idAluno }) {
                   </TouchableOpacity>
                 </View>
               </View>
+            </View>
+
+            {/* Local para inserir a URL do video */}
+            <View className="p-2 border-2 border-gray/45 elevation-sm bg-white rounded-md">
+              <Text className="font-bold text-lg">Nome da ficha: </Text>
+
+              <TextInput
+                className="p-2 border-2 border-gray/35 rounded-md"
+                maxLength={35}
+                value={videoUrl}
+                onChangeText={text => setVideoUrl(text)}
+                placeholder="Insira o link do video"
+                placeholderTextColor={colors.gray}
+              />
             </View>
 
             {/* Botao para adicionar exercício */}

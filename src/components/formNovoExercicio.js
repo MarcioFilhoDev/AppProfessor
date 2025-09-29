@@ -11,7 +11,6 @@ import {
 import React, { useContext, useState } from 'react';
 
 import { ExerciciosContext } from '../contexts/exercicios';
-import { colors } from '../constants/colors';
 
 export default function FormNovoExercicio() {
   const { criarExercicio } = useContext(ExerciciosContext);
@@ -67,7 +66,7 @@ export default function FormNovoExercicio() {
   // <ScrollView className="flex-1"></ScrollView>
   return (
     <KeyboardAvoidingView
-      style={{ flex: 1 }}
+      className="flex-1"
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
     >
       <ScrollView
