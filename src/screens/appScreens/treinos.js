@@ -28,25 +28,27 @@ export default function Treinos() {
   }
 
   return (
-    <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
+    <TouchableWithoutFeedback
+      onPress={() => Keyboard.dismiss()}
+      touchSoundDisabled
+    >
       <KeyboardAvoidingView
         className="flex-1"
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       >
-        <View className="flex-1 gap-4">
+        <View className="h-3/4 gap-4">
           {/* Formulário */}
-          <FormNovoExercicio />
+          <View className="flex-1 mt-4">
+            <FormNovoExercicio />
+          </View>
 
           <View className="items-center w-full px-4">
             <View className="bg-black/20 w-full h-0.5 rounded-xl" />
           </View>
 
           {/* Tabela */}
-          <View className="flex-1 px-4">
-            <View
-              style={{ height: '90%' }}
-              className="w-full bg-gray-100 rounded-md overflow-hidden"
-            >
+          <View className="px-4">
+            <View className="w-full bg-gray-100 rounded-md overflow-hidden">
               {/* Cabeçalho da tabela */}
               <View className="flex-row bg-primary rounded-t-md">
                 <Text className="flex-1 text-white text-base font-bold text-center py-2 border-r border-orange-300">

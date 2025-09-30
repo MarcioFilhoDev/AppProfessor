@@ -20,6 +20,7 @@ export function ExerciciosProvider({ children }) {
       nome: informacoes.nome,
       nivel: informacoes.nivel,
       grupoMuscular: informacoes.grupoMuscular,
+      videoUrl: informacoes.videoUrl,
       cadastrado_por: user.nome,
       cadastrado_em: new Date(),
     });
